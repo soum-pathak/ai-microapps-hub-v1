@@ -1,0 +1,249 @@
+/* ================================================================
+   AI Microapps Hub — styles.css
+   Fully-featured, production-ready stylesheet for the whole site.
+   Place at project root as "styles.css" (or in /css and update links).
+   ================================================================ */
+
+/* --------------------------
+   Variables / Theme
+   -------------------------- */
+:root{
+  --bg-1: #f7fafc;           /* page background light */
+  --bg-2: #eef2ff;           /* subtle card bg */
+  --card: #ffffff;           /* card background */
+  --muted: #64748b;          /* muted text */
+  --text: #0f172a;           /* main text */
+  --accent: #7c3aed;         /* primary accent */
+  --accent-2: #06b6d4;       /* secondary accent */
+  --success: #16a34a;
+  --danger: #ef4444;
+  --glass: rgba(255,255,255,0.7);
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --shadow-soft: 0 8px 30px rgba(2,6,23,0.06);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  --ease: cubic-bezier(.2,.9,.3,1);
+}
+
+/* Dark-mode fallback when body has .dark */
+body.dark {
+  --bg-1: #071126;
+  --bg-2: #071026;
+  --card: #08111b;
+  --muted: #94a3b8;
+  --text: #e6eef6;
+  --glass: rgba(255,255,255,0.03);
+  --shadow-soft: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* --------------------------
+   Base
+   -------------------------- */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(180deg,var(--bg-1), #f1f5f9);
+  color: var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+
+/* Container */
+.container, .wrap { max-width:1120px; margin:0 auto; padding:20px; }
+
+/* Headings */
+h1,h2,h3,h4{margin:0 0 .5rem 0; line-height:1.18}
+h1{font-size:2rem; font-weight:800}
+h2{font-size:1.25rem; font-weight:700}
+h3{font-size:1rem; font-weight:700}
+
+/* Paragraphs and text */
+p{margin:0 0 1rem 0}
+.small, .muted { color:var(--muted) }
+.tiny { font-size:0.86rem }
+
+/* Links */
+a{color:var(--accent); text-decoration:none}
+a:hover, a:focus{ text-decoration:underline; outline:none }
+
+/* Buttons */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 14px; border-radius:10px; cursor:pointer; border:0;
+  background: linear-gradient(90deg,var(--accent), #8b5cf6);
+  color:white; font-weight:700; box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+}
+.btn:hover{ transform: translateY(-2px) }
+.btn-ghost {
+  background:transparent; border:1px solid rgba(15,23,42,0.06); color:var(--text);
+  padding:9px 12px; border-radius:8px;
+}
+.icon-btn {
+  background:transparent; border:1px solid rgba(15,23,42,0.06); padding:8px; border-radius:8px;
+}
+
+/* Forms */
+input[type="text"], input[type="email"], select, textarea {
+  font-family:inherit;
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(15,23,42,0.06);
+  background:transparent;
+  color:inherit;
+  resize:vertical;
+  box-shadow:none;
+  transition: border-color .12s ease;
+}
+input:focus, textarea:focus, select:focus {
+  outline:none;
+  border-color: rgba(124,58,237,0.45);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.06);
+}
+
+/* Textarea helper */
+textarea { min-height:140px; line-height:1.5; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding:18px;
+  box-shadow: var(--shadow-soft);
+}
+.card-sm { padding:12px; border-radius:var(--radius-md) }
+
+/* Small utilities */
+.kicker { display:inline-block; padding:6px 10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; border-radius:999px; font-weight:800; font-size:12px; }
+.chip { display:inline-block; padding:6px 10px; background:rgba(124,58,237,0.08); color:#6d28d9; border-radius:999px; font-weight:700; font-size:13px; }
+.result { background: linear-gradient(180deg,#0f1724,#071026); color:#e6eef6; padding:12px; border-radius:10px; min-height:48px; white-space:pre-wrap; }
+
+/* Grid layouts */
+.tools-grid { display:block }
+.cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:12px; }
+
+/* Footer */
+.footer {
+  padding:24px; margin-top:28px; text-align:center; color:var(--muted);
+}
+
+/* Accessibility focus */
+:focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset: 3px; border-radius:8px; }
+
+/* Tiny responsive helpers */
+@media (min-width:880px) {
+  .tools-grid { display:grid; grid-template-columns: 1fr 480px; gap:18px; }
+}
+
+/* --------------------------
+   Specific components used across pages
+   -------------------------- */
+
+/* Topbar / header */
+.topbar {
+  background: linear-gradient(90deg,var(--accent), #8b5cf6);
+  color: white;
+  padding:16px 0;
+  border-radius:0 0 12px 12px;
+  box-shadow: 0 10px 30px rgba(124,58,237,0.08);
+}
+.topbar .wrap { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.brand { font-weight:800; font-size:18px; color:white; display:flex; align-items:center; gap:8px; text-decoration:none }
+.nav a { color: rgba(255,255,255,0.95); margin-left:14px; font-weight:600; }
+.topbar .tiny { color: rgba(255,255,255,0.8) }
+
+/* Hero styles */
+.hero {
+  padding:28px;
+  background: linear-gradient(180deg, rgba(124,58,237,0.06), rgba(6,182,212,0.03));
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Demo box used in index.html */
+.demo-box { border-radius:12px; background:linear-gradient(180deg,#fff,#fbfdff); padding:14px; box-shadow:var(--shadow-soft) }
+.demo-result { background: #0f1724; color: #e6eef6; padding:12px; border-radius:10px; }
+
+/* Tool card (summary list) */
+.tool-card {
+  border-radius:12px;
+  padding:14px;
+  background: linear-gradient(180deg,var(--card), #fff);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+}
+.tool-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(2,6,23,0.08); }
+
+/* Footer link group */
+.footer-links { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+/* Result utilities */
+.permalink { color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:8px; border:1px solid rgba(15,23,42,0.04); }
+
+/* Sentences list */
+.sent-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+
+/* Card maker canvas styling */
+.card-canvas { border-radius:12px; box-shadow: 0 10px 30px rgba(2,6,23,0.08); display:block; width:100%; height:auto; }
+
+/* Tiny badges */
+.badge { display:inline-block; padding:6px 8px; border-radius:999px; font-weight:700; background:rgba(250,250,250,0.6); color:var(--text); border:1px solid rgba(15,23,42,0.03) }
+
+/* --------------------------
+   Responsive tweaks
+   -------------------------- */
+@media (max-width: 880px) {
+  .container, .wrap { padding:14px }
+  h1{ font-size:1.6rem }
+  .topbar { padding:12px 10px }
+  .tools-grid { display:block }
+  .cards-grid { grid-template-columns: 1fr; gap:12px }
+}
+
+/* --------------------------
+   Small animations & microinteractions
+   -------------------------- */
+@keyframes floatUp {
+  from { transform: translateY(6px); opacity:0 }
+  to { transform: translateY(0); opacity:1 }
+}
+.animate-float { animation: floatUp .36s var(--ease) both }
+
+/* loading spinner (small utility) */
+.spinner {
+  width:18px; height:18px; border-radius:50%; border:2px solid rgba(0,0,0,0.08); border-top-color:var(--accent); animation:spin .9s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg) } }
+
+/* --------------------------
+   Print & accessibility
+   -------------------------- */
+@media print {
+  body { background: white; color: black }
+  .topbar, .footer { display:none }
+  .card, .tool-card { box-shadow:none; border:1px solid #ddd }
+}
+
+/* --------------------------
+   Utilities (helpers for future JS)
+   -------------------------- */
+.hidden { display:none !important }
+.flex { display:flex }
+.center { display:flex; align-items:center; justify-content:center }
+
+/* spacing helpers */
+.mt-1{margin-top:4px} .mt-2{margin-top:8px} .mt-3{margin-top:12px} .mt-4{margin-top:16px}
+.mb-1{margin-bottom:4px} .mb-2{margin-bottom:8px} .mb-3{margin-bottom:12px}
+
+/* small table for credit / metadata in about pages */
+.meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; }
+
+/* --------------------------
+   End of file
+   -------------------------- */

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Shorten & Improve — AI Microapps Hub</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <header class="topbar"><div class="wrap"><a class="brand" href="index.html">AI Microapps Hub</a></div></header>
+  <main class="wrap">
+    <h2>Shorten & Improve Sentence</h2>
+    <p class="small">Enter a sentence. The tool will remove filler words and try basic active-voice conversions.</p>
+
+    <label class="small">Enter sentence</label>
+    <input id="inSentence" placeholder="e.g., I was just wondering if you could possibly help me with this task" />
+    <div class="form-row">
+      <button id="shortBtn" class="btn">Shorten</button>
+      <button id="improveBtn" class="icon-btn">Improve</button>
+      <button id="clearBtn" class="icon-btn">Clear</button>
+    </div>
+
+    <div id="outWrap" style="display:none;margin-top:12px">
+      <div class="result-box" id="outText"></div>
+      <div class="actions">
+        <button id="copyBtn" class="btn">Copy</button>
+      </div>
+    </div>
+  </main>
+
+<script>
+const FILLERS = ["just","actually","really","very","possibly","maybe","probably","basically","literally","just","so"];
+function shortenText(s){
+  let words = s.split(/\s+/).filter(Boolean);
+  words = words.filter(w => !FILLERS.includes(w.toLowerCase()));
+  return words.join(' ');
+}
+function improveText(s){
+  // simple passive -> active heuristic: "was done by X" -> "X did"
+  let out = s.replace(/\bwas (\w+ed) by (\w+)/gi, (m,verb,actor)=> `${actor} ${verb}`);
+  out = out.replace(/\bcan be (\w+ed)/gi, (m,verb)=> `can ${verb.replace(/ed$/,'')}`);
+  out = out.replace(/\bi am going to\b/gi,'I will');
+  return out;
+}
+
+/* UI */
+const inSentence = document.getElementById('inSentence');
+const shortBtn = document.getElementById('shortBtn');
+const improveBtn = document.getElementById('improveBtn');
+const outWrap = document.getElementById('outWrap');
+const outText = document.getElementById('outText');
+const copyBtn = document.getElementById('copyBtn');
+const clearBtn = document.getElementById('clearBtn');
+
+shortBtn.addEventListener('click', ()=>{
+  const s = inSentence.value.trim();
+  if(!s) { alert('Enter a sentence'); return; }
+  const res = shortenText(s);
+  outText.textContent = res;
+  outWrap.style.display='block';
+});
+improveBtn.addEventListener('click', ()=>{
+  const s = inSentence.value.trim();
+  if(!s) { alert('Enter a sentence'); return; }
+  const res = improveText(s);
+  outText.textContent = res;
+  outWrap.style.display='block';
+});
+copyBtn.addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(outText.textContent); copyBtn.textContent='Copied ✓'; setTimeout(()=>copyBtn.textContent='Copy',1200);}catch(e){ alert('Copy failed'); }
+});
+clearBtn.addEventListener('click', ()=>{ inSentence.value=''; outWrap.style.display='none'; });
+</script>
+</body>
+</html>

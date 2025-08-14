@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Card Maker — AI Microapps Hub</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <header class="topbar"><div class="wrap"><a class="brand" href="index.html">AI Microapps Hub</a></div></header>
+  <main class="wrap">
+    <h2>Shareable Card Maker</h2>
+    <p class="small">Create a social image (1200×630) with title and subtitle. Download PNG.</p>
+
+    <label class="small">Title</label>
+    <input id="cardTitle" placeholder="Short headline (e.g., 5 Productivity Tips)" />
+    <label class="small">Subtitle</label>
+    <input id="cardSubtitle" placeholder="Subtitle or author (e.g., by Soum)" />
+    <div class="form-row">
+      <label class="small">Accent color</label>
+      <input id="accent" type="color" value="#5b21b6" style="width:70px;padding:6px"/>
+      <button id="renderBtn" class="btn">Render</button>
+      <button id="downloadBtn" class="btn" style="background:#0ea5a4">Download PNG</button>
+    </div>
+
+    <div style="margin-top:12px" class="center">
+      <canvas id="cardCanvas" width="1200" height="630" style="border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,0.15)"></canvas>
+    </div>
+  </main>
+
+<script>
+const titleEl = document.getElementById('cardTitle');
+const subEl = document.getElementById('cardSubtitle');
+const renderBtn = document.getElementById('renderBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const accent = document.getElementById('accent');
+const canvas = document.getElementById('cardCanvas');
+const ctx = canvas.getContext('2d');
+
+function renderCard(){
+  const title = titleEl.value.trim() || 'AI Microapps Hub';
+  const subtitle = subEl.value.trim() || 'Free micro tools • ai.microapps';
+  const accentColor = accent.value || '#5b21b6';
+
+  // background
+  ctx.fillStyle = '#0f1724';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // gradient stripe
+  const g = ctx.createLinearGradient(0,0,canvas.width,0);
+  g.addColorStop(0, accentColor);
+  g.addColorStop(1, '#06b6d4');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,canvas.width,160);
+
+  // Title
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 56px Inter, Arial';
+  wrapText(ctx, title, 60, 260, 1080, 70);
+
+  // subtitle
+  ctx.font = '400 28px Inter, Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillText(subtitle, 60, 420);
+
+  // small brand
+  ctx.font = '600 18px Inter, Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText('ai-microapps.local', 60, 560);
+}
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  let testLine = '';
+  let lineCount = 0;
+  for (let n = 0; n < words.length; n++) {
+    testLine = line + words[n] + ' ';
+    const metrics = context.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      context.fillText(line, x, y + (lineCount * lineHeight));
+      line = words[n] + ' ';
+      lineCount++;
+    } else {
+      line = testLine;
+    }
+  }
+  context.fillText(line, x, y + (lineCount * lineHeight));
+}
+
+renderBtn.addEventListener('click', renderCard);
+downloadBtn.addEventListener('click', ()=>{
+  renderCard();
+  const data = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = data;
+  a.download = 'microapp-card.png';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+/* initial render */
+renderCard();
+</script>
+</body>
+</html>

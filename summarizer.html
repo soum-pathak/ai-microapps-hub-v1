@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Summarizer — AI Microapps Hub (Module-based)</title>
+  <meta name="description" content="A production-ready, module-based summarizer UI for the AI Microapps Hub. Imports ./js/ai-tools.js and ./js/common.js as ES modules." />
+  <meta name="author" content="AI Microapps Hub" />
+
+  <!-- Fonts & icons -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#7c3aed; --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02); --success:#10b981; --danger:#ef4444; --max-width:1200px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;background:linear-gradient(180deg,#071023 0%, #07102b 60%);color:#e6eef8;margin:0;padding:0}
+    .container{max-width:var(--max-width);margin:32px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);}
+
+    header.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5eead4);display:flex;align-items:center;justify-content:center;font-weight:800;color:#04111a}
+    h1.title{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    nav.controls{display:flex;gap:10px;align-items:center}
+    button.btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:inherit;cursor:pointer}
+    button.primary{background:linear-gradient(90deg,var(--accent),#34d399);border:none;color:#02121a;font-weight:700}
+
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+
+    /* Left column: editor */
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .editor{min-height:320px;border-radius:10px;padding:12px;border:1px dashed rgba(255,255,255,0.03);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);resize:vertical}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .left-actions{display:flex;gap:10px;margin-top:10px}
+
+    /* Right column: results */
+    .sidebar{position:relative}
+    .section-title{font-weight:700;margin-bottom:8px}
+    .card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(3,7,18,0.5);}
+    .result{min-height:80px;padding:12px;border-radius:8px;background:var(--glass);color:#dff2ff}
+
+    .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .badge{background:var(--glass-2);padding:6px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* Responsive */
+    @media (max-width:980px){.grid{grid-template-columns:1fr;}.sidebar{order:2}.panel{order:1}}
+
+    /* Fancy details for "months of hard work" look */
+    .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+    .feature{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+
+    /* file drop zone */
+    .dropzone{border-radius:10px;padding:14px;border:2px dashed rgba(255,255,255,0.03);text-align:center}
+
+    /* summary cards list */
+    .summaries{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .summary-item{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02)}
+
+    /* tiny helpers */
+    input[type="range"]{width:140px}
+    .muted{color:var(--muted)}
+    .tiny{font-size:12px}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header class="nav" aria-label="Main navigation">
+      <div class="brand">
+        <div class="logo">SM</div>
+        <div>
+          <h1 class="title">Summarizer — Module-based</h1>
+          <p class="lead">A feature-rich summarizer UI that imports <code>./js/ai-tools.js</code> and <code>./js/common.js</code>. Built to look polished — months of work feel ✨</p>
+        </div>
+      </div>
+      <nav class="controls" aria-label="Top controls">
+        <button class="btn" id="loadPromptsBtn" title="Load reusable prompts">Load prompts</button>
+        <button class="btn" id="saveLocal">Save draft</button>
+        <button class="btn" id="clearBtn">Clear</button>
+        <button class="btn primary" id="summarizeBtn">Summarize</button>
+      </nav>
+    </header>
+
+    <section class="grid" aria-live="polite">
+      <!-- LEFT: Editor / Inputs -->
+      <div class="panel" aria-label="Input panel">
+        <div class="toolbar" role="toolbar" aria-label="Editor toolbar">
+          <select id="modeSelect" class="btn" aria-label="Mode select">
+            <option value="extractive">Extractive</option>
+            <option value="abstractive">Abstractive</option>
+            <option value="headlines">Headlines only</option>
+          </select>
+
+          <label class="small" for="lengthRange">Length</label>
+          <input id="lengthRange" type="range" min="1" max="10" value="4" aria-label="Summary length" />
+
+          <button class="btn" id="keywordsBtn" title="Extract keywords">Keywords</button>
+          <button class="btn" id="readabilityBtn" title="Readability score">Readability</button>
+
+        </div>
+
+        <div>
+          <label class="small" for="sourceUrl">Summarize URL</label>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <input id="sourceUrl" class="btn" type="url" placeholder="https://example.com/article" style="flex:1;padding:10px" />
+            <button class="btn" id="fetchUrlBtn">Fetch</button>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dropzone" aria-label="File dropzone">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="text-align:left">
+              <strong>Drag & drop</strong> a text/pdf/docx file here or paste text below.
+              <div class="tiny muted">Supports plain text and simple document scraping (server-side may be needed for complex PDFs).</div>
+            </div>
+            <input id="fileInput" type="file" accept=".txt,.md,.pdf,.docx" style="display:block" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="small" for="editor">Paste or write text to summarize</label>
+          <textarea id="editor" class="editor" placeholder="Paste long article, transcript, or notes here..." aria-label="Editor"></textarea>
+          <div class="left-actions">
+            <button class="btn" id="examplesBtn">Examples</button>
+            <button class="btn" id="importPromptBtn">Import prompt</button>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+              <span class="muted tiny">Model:</span>
+              <select id="modelSelect" class="btn tiny" aria-label="Model select"><option>default</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid" aria-hidden="false">
+          <div class="feature">
+            <strong>Advanced options</strong>
+            <div class="tiny muted">Fine-tune output using reusable prompts or the slider.</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <label class="small" for="preserveBullets">Preserve bullets</label>
+              <input type="checkbox" id="preserveBullets" />
+            </div>
+            <div style="margin-top:8px;">
+              <label class="small" for="toneSelect">Tone</label>
+              <select id="toneSelect" class="btn small">
+                <option value="neutral">Neutral</option>
+                <option value="concise">Concise</option>
+                <option value="detailed">Detailed</option>
+                <option value="academic">Academic</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="feature">
+            <strong>Prompts & templates</strong>
+            <div class="tiny muted">Load / save custom prompts to <code>/data/prompts.json</code> for reuse across pages.</div>
+            <div style="margin-top:8px">
+              <select id="promptSelect" class="btn small" aria-label="Prompt presets"></select>
+              <button class="btn" id="savePromptBtn" title="Save current input as prompt">Save</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Results / analysis -->
+      <aside class="sidebar">
+        <div class="card" aria-label="Summary results">
+          <div class="section-title">Summary & Analysis</div>
+          <div class="meta">
+            <div class="badge" id="wordCount">Words: 0</div>
+            <div class="badge" id="readingTime">Read time: 0m</div>
+            <div class="badge" id="summaryType">Type: -</div>
+            <div class="badge" id="statusBadge">Ready</div>
+          </div>
+
+          <div class="result" id="summaryResult" role="region" aria-live="polite">
+            <em class="muted">Your summary will appear here after you click Summarize.</em>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <button class="btn" id="copyBtn">Copy</button>
+            <button class="btn" id="downloadTxt">Download .txt</button>
+            <button class="btn" id="downloadMd">Download .md</button>
+            <button class="btn" id="openNotes">Open notes</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Related outputs</div>
+            <div class="summaries" id="extraOutputs">
+              <!-- Headlines, keywords, highlights inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="section-title">Quality & Controls</div>
+          <div class="tiny muted">Fine-grained control over summarization and export.</div>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <label class="small">Length</label>
+            <input id="lengthPreview" type="range" min="1" max="10" value="4">
+            <span class="muted tiny" id="lengthValue">4</span>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn" id="toggleExtractive">Toggle Extractive</button>
+            <button class="btn" id="toggleAbstractive">Toggle Abstractive</button>
+          </div>
+        </div>
+
+        <footer>
+          <div class="muted tiny">Pro tip: Create a <code>/data/prompts.json</code> file with an array of prompt objects to load presets automatically.</div>
+        </footer>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Module-based script: imports functions from ./js/ai-tools.js and ./js/common.js -->
+  <script type="module">
+    import { buildExtractiveSummary, genHeadlines, generateAbstractiveSummary } from './js/ai-tools.js';
+    import { loadPrompts, renderPromptSelect, setStatus, fetchViaProxy, bindFileDrop, downloadText } from './js/common.js';
+
+    // Utilities
+    const $ = sel => document.querySelector(sel);
+    const byId = id => document.getElementById(id);
+
+    const editor = byId('editor');
+    const summarizeBtn = byId('summarizeBtn');
+    const summaryResult = byId('summaryResult');
+    const wordCount = byId('wordCount');
+    const readingTime = byId('readingTime');
+    const summaryType = byId('summaryType');
+    const extraOutputs = byId('extraOutputs');
+    const promptSelect = byId('promptSelect');
+    const loadPromptsBtn = byId('loadPromptsBtn');
+    const dropzone = byId('dropzone');
+    const fileInput = byId('fileInput');
+    const fetchUrlBtn = byId('fetchUrlBtn');
+    const sourceUrl = byId('sourceUrl');
+
+    // Local fallback prompts (if /data/prompts.json isn't present)
+    const defaultPrompts = [
+      { id: 'p1', name: 'One-paragraph summary', prompt: 'Summarize the text into one concise paragraph, preserving main facts and conclusions.' },
+      { id: 'p2', name: 'Bullet points', prompt: 'Extract the most important points from the text and present them as 6-8 bullet points.' },
+      { id: 'p3', name: 'Executive summary', prompt: 'Write a professional executive summary suitable for a C-suite audience, 4-6 sentences.' }
+    ];
+
+    // Keep an in-memory prompt store
+    let prompts = [...defaultPrompts];
+
+    // Initialize prompts using shared loader
+    (async function initPrompts(){
+      try{
+        const remote = await loadPrompts('/data/prompts.json');
+        if(remote && remote.length) prompts = remote;
+      }catch(e){ console.warn('prompts load failed', e); }
+      renderPromptSelect(promptSelect, prompts, { selectFirst: true });
+      setStatus('Prompts ready');
+    })();
+
+    // ------- helper functions -------
+    function estimateReadingTime(text){
+      const words = text.trim().split(/\s+/).filter(Boolean).length;
+      const minutes = Math.max(1, Math.round(words / 200));
+      wordCount.textContent = `Words: ${words}`;
+      readingTime.textContent = `Read time: ${minutes}m`;
+    }
+
+    function setLocalStatus(msg, danger=false){
+      setStatus(msg, { danger });
+    }
+
+    // Debounce utility (local)
+    function debounceLocal(fn, ms=400){let t;return (...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};}
+
+    // Attach shared file drop
+    bindFileDrop(dropzone, async (file) => {
+      setLocalStatus(`Reading ${file.name}...`);
+      const txtTypes = ['text/plain','text/markdown','application/json'];
+      if (txtTypes.includes(file.type) || file.name.match(/\.(txt|md|json)$/i)){
+        const text = await file.text(); editor.value = text; estimateReadingTime(text); setLocalStatus('File loaded');
+      } else {
+        setLocalStatus('Non-text file — please upload plain text or use server extraction', true);
+      }
+    });
+
+    // Keep file input fallback for manual selection
+    fileInput.addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0]; if (f){ setLocalStatus(`Reading ${f.name}...`);
+        if (['text/plain','text/markdown','application/json'].includes(f.type) || f.name.match(/\.(txt|md|json)$/i)){
+          const text = await f.text(); editor.value = text; estimateReadingTime(text); setLocalStatus('File loaded');
+        } else { setLocalStatus('Non-text file — server extraction required', true); }
+      }
+    });
+
+    // Fetch remote URL (uses /api/fetch proxy; server required)
+    fetchUrlBtn.addEventListener('click', async ()=>{
+      const url = sourceUrl.value.trim(); if(!url) return setLocalStatus('Enter a URL', true);
+      setLocalStatus('Fetching URL...');
+      try{
+        const txt = await fetchViaProxy(url);
+        editor.value = txt; estimateReadingTime(txt); setLocalStatus('URL fetched');
+      }catch(err){ console.error(err); setLocalStatus('Could not fetch URL (CORS or proxy missing)', true); }
+    });
+
+    // Summarize flow
+    summarizeBtn.addEventListener('click', async ()=>{ await runSummarize(); });
+
+    async function runSummarize(){
+      const text = editor.value.trim();
+      if(!text){ setLocalStatus('No text to summarize', true); return; }
+      setLocalStatus('Summarizing...');
+      summaryType.textContent = `Type: ${byId('modeSelect').value}`;
+      estimateReadingTime(text);
+
+      const opts = {
+        length: parseInt(byId('lengthRange').value,10),
+        tone: byId('toneSelect').value,
+        preserveBullets: byId('preserveBullets').checked,
+        prompt: prompts.find(p=>p.id===promptSelect.value)?.prompt,
+      };
+
+      try{
+        if(byId('modeSelect').value === 'extractive'){
+          const res = await buildExtractiveSummary(text, opts);
+          renderSummary(res.summary, res);
+          await renderExtraOutputs(text, res);
+        } else if(byId('modeSelect').value === 'abstractive'){
+          const res = await generateAbstractiveSummary(text, opts);
+          renderSummary(res.summary, res);
+          await renderExtraOutputs(text, res);
+        } else if(byId('modeSelect').value === 'headlines'){
+          const heads = await genHeadlines(text, {count:6});
+          renderHeadlines(heads);
+        }
+        setLocalStatus('Done');
+      }catch(err){ console.error(err); setLocalStatus('Summarization failed', true); }
+    }
+
+    function renderSummary(text, meta={}){
+      summaryResult.innerHTML = '';
+      const node = document.createElement('div'); node.innerHTML = text.replace(/\n/g,'<br>');
+      summaryResult.appendChild(node);
+      extraOutputs.innerHTML = '';
+      if(meta.keywords && meta.keywords.length){
+        const kCard = document.createElement('div'); kCard.className='summary-item'; kCard.innerHTML = `<strong>Keywords</strong><div class="muted tiny">${meta.keywords.join(', ')}</div>`; extraOutputs.appendChild(kCard);
+      }
+      if(meta.highlights && meta.highlights.length){
+        const hCard = document.createElement('div'); hCard.className='summary-item'; hCard.innerHTML = `<strong>Highlights</strong><ul>${meta.highlights.map(h=>`<li>${h}</li>`).join('')}</ul>`; extraOutputs.appendChild(hCard);
+      }
+    }
+
+    async function renderExtraOutputs(text, meta){
+      try{
+        const heads = await genHeadlines(text, {count:5});
+        if(heads && heads.length){
+          const hCard = document.createElement('div'); hCard.className='summary-item'; hCard.innerHTML = `<strong>Headlines</strong><ol>${heads.map(h=>`<li>${h}</li>`).join('')}</ol>`; extraOutputs.appendChild(hCard);
+        }
+      }catch(e){ console.warn('genHeadlines failed', e); }
+    }
+
+    function renderHeadlines(heads){
+      summaryResult.innerHTML = `<ol>${heads.map(h=>`<li>${h}</li>`).join('')}</ol>`;
+      extraOutputs.innerHTML = '';
+    }
+
+    // Copy / download handlers
+    byId('copyBtn').addEventListener('click', async ()=>{
+      const text = summaryResult.innerText.trim(); if(!text) return setLocalStatus('Nothing to copy', true);
+      await navigator.clipboard.writeText(text); setLocalStatus('Copied to clipboard');
+    });
+
+    byId('downloadTxt').addEventListener('click', ()=>{ downloadText(summaryResult.innerText || '', 'summary.txt'); });
+    byId('downloadMd').addEventListener('click', ()=>{ downloadText(summaryResult.innerText || '', 'summary.md'); });
+
+    // small helpers: save prompt
+    byId('savePromptBtn').addEventListener('click', ()=>{
+      const name = prompt('Prompt name (short)'); if(!name) return; const promptText = prompt('Prompt text (the instruction)');
+      const id = 'p_' + Date.now(); prompts.push({id,name,prompt:promptText}); renderPromptSelect(promptSelect, prompts); setLocalStatus('Prompt saved locally');
+    });
+
+    // Quick local save/load for editor
+    byId('saveLocal').addEventListener('click', ()=>{ localStorage.setItem('summarizer.draft', editor.value); setLocalStatus('Draft saved'); });
+    byId('clearBtn').addEventListener('click', ()=>{ if(confirm('Clear editor?')){ editor.value=''; summaryResult.innerHTML=''; extraOutputs.innerHTML=''; setLocalStatus('Cleared'); }});
+
+    // Load draft if exists
+    if(localStorage.getItem('summarizer.draft')){
+      setTimeout(()=>{
+        if(confirm('Load saved draft?')){ editor.value = localStorage.getItem('summarizer.draft'); estimateReadingTime(editor.value); setLocalStatus('Draft loaded'); }
+      },500);
+    }
+
+    // Live word-count update
+    editor.addEventListener('input', debounceLocal(()=>estimateReadingTime(editor.value),250));
+
+    // length preview sync
+    byId('lengthRange').addEventListener('input', e=>{ byId('lengthValue').textContent = e.target.value; byId('lengthPreview').value = e.target.value; });
+    byId('lengthPreview').addEventListener('input', e=>{ byId('lengthRange').value = e.target.value; byId('lengthValue').textContent = e.target.value; });
+
+    // small UX: examples button
+    byId('examplesBtn').addEventListener('click', ()=>{
+      const ex = `Example — paste this transcript of an interview about green energy.\n\n1) Renewable energy adoption barriers\n2) Cost of solar vs wind\n3) Infrastructure challenges`;
+      if(!editor.value) editor.value = ex; else if(confirm('Replace editor with example?')) editor.value = ex;
+      estimateReadingTime(editor.value);
+    });
+
+    // Import prompt quick flow
+    byId('importPromptBtn').addEventListener('click', ()=>{
+      const p = prompt('Paste prompt text to import'); if(!p) return; prompts.push({id:'imp_'+Date.now(),name:p.slice(0,30)+'...',prompt:p}); renderPromptSelect(promptSelect, prompts); setLocalStatus('Imported prompt');
+    });
+
+    // Accessibility: keyboard shortcut (Ctrl+Enter) to summarize
+    window.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runSummarize(); }});
+
+    // Initialization
+    (function init(){
+      setLocalStatus('Ready');
+      window.SummarizerApp = { runSummarize, loadPrompts: () => loadPrompts('/data/prompts.json') };
+    })();
+
+  </script>
+
+  <!-- END -->
+</body>
+</html>

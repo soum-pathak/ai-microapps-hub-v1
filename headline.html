@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Headline Generator — AI Microapps Hub (Module-based)</title>
+  <meta name="description" content="Create high-quality, SEO-optimized headlines from any text — module-based, imports ./js/ai-tools.js" />
+  <meta name="author" content="AI Microapps Hub" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700,800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--bg:#071022;--card:#071427;--muted:#9fb0c8;--accent:#ff7aa2;--accent-2:#7c3aed;--glass: rgba(255,255,255,0.03);font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;--max-width:1200px}
+    html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,#041022 0%, #071028 60%);color:#eaf6ff}
+    .wrap{max-width:var(--max-width);margin:28px auto;padding:24px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 18px 45px rgba(2,8,23,0.7)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#071021}
+    h1{margin:0;font-size:20px}.subtitle{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px}.card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    textarea.editor{width:100%;min-height:220px;padding:12px;border-radius:10px;border:1px dashed rgba(255,255,255,0.03);background:transparent;color:inherit;resize:vertical}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;cursor:pointer}.btn.primary{background:linear-gradient(90deg,var(--accent-2),var(--accent));border:none;color:#041018;font-weight:700}.muted{color:var(--muted)}.small{font-size:13px}
+    .options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.option{display:flex;flex-direction:column}label.small{margin-bottom:6px}
+    .results{display:flex;flex-direction:column;gap:10px}.headline-item{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02)}.headline-actions{display:flex;gap:8px;align-items:center;margin-top:6px}
+    .right-column{position:sticky;top:28px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.tag{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:999px;font-size:13px;color:var(--muted)}
+    footer{margin-top:14px;color:var(--muted);font-size:13px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}.right-column{position:static}}
+  </style>
+</head>
+<body>
+  <main class="wrap" role="main">
+    <header>
+      <div class="brand">
+        <div class="logo">HL</div>
+        <div>
+          <h1>Headline Generator — Module-based</h1>
+          <div class="subtitle">Create multiple headline variations — SEO-aware, click-tested, and audience-tuned. Imports <code>./js/ai-tools.js</code> and <code>./js/common.js</code>.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="muted small">Model: <strong id="modelName">default</strong></div>
+        <button class="btn" id="loadPrompts">Load prompts</button>
+        <button class="btn primary" id="generateBtn">Generate Headlines</button>
+      </div>
+    </header>
+
+    <section class="grid" aria-live="polite">
+      <!-- LEFT: Input & results -->
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <div class="small muted">Source text (paste article, excerpt, or URL content)</div>
+              <textarea id="editor" class="editor" placeholder="Paste article, transcript, or notes here..."></textarea>
+            </div>
+            <div style="width:220px;margin-left:12px">
+              <div class="small muted">Quick import</div>
+              <input id="sourceUrl" type="url" class="btn" placeholder="https://example.com/article" style="width:100%;padding:10px;margin-top:6px" />
+              <div style="display:flex;gap:6px;margin-top:8px">
+                <button class="btn" id="fetchBtn">Fetch URL</button>
+                <button class="btn" id="pasteBtn">Paste from clipboard</button>
+              </div>
+
+              <div style="margin-top:12px">
+                <div class="small muted">Presets</div>
+                <select id="presetSelect" class="btn" style="width:100%;margin-top:6px;padding:10px"></select>
+                <div style="display:flex;gap:6px;margin-top:8px">
+                  <button class="btn" id="savePreset">Save Preset</button>
+                  <button class="btn" id="clearBtn">Clear</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="options" style="margin-top:12px">
+            <div class="option">
+              <label class="small">Tone</label>
+              <select id="tone" class="btn"><option value="neutral">Neutral</option><option value="clickbait">Clicky / Viral</option><option value="informative">Informative</option><option value="professional">Professional</option><option value="funny">Funny</option></select>
+            </div>
+
+            <div class="option">
+              <label class="small">Length</label>
+              <select id="length" class="btn"><option value="short">Short (3-6 words)</option><option value="medium">Medium (6-10 words)</option><option value="long">Long (10-16 words)</option></select>
+            </div>
+
+            <div class="option">
+              <label class="small">Audience</label>
+              <select id="audience" class="btn"><option value="general">General</option><option value="developers">Developers</option><option value="marketers">Marketers</option><option value="executives">Executives</option><option value="students">Students</option></select>
+            </div>
+
+            <div class="option">
+              <label class="small">Variations</label>
+              <input id="count" class="btn" type="number" min="3" max="20" value="8" />
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn primary" id="generateBtn2">Generate</button>
+            <button class="btn" id="analyzeBtn">Analyze Headlines</button>
+            <button class="btn" id="batchBtn">Batch mode</button>
+            <button class="btn" id="aiTuneBtn">AI Tune</button>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+              <span class="muted small">Save:</span>
+              <button class="btn" id="exportCsv">Export CSV</button>
+              <button class="btn" id="copyAll">Copy all</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Generated Headlines</strong><div class="muted small">Review, favorite, and export</div></div>
+            <div class="muted small">Count: <span id="resultCount">0</span></div>
+          </div>
+
+          <div id="results" class="results" style="margin-top:12px;max-height:520px;overflow:auto"></div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button class="btn" id="regenerateBtn">Regenerate</button>
+            <button class="btn" id="sortBtn">Sort by score</button>
+            <button class="btn" id="exportSelected">Export Selected</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Controls, analysis, presets -->
+      <aside class="right-column">
+        <div class="card">
+          <div><strong>Headline Quality</strong><div class="muted small">Scoring helps you pick better-performing titles</div></div>
+          <div class="meta" style="margin-top:8px">
+            <div class="tag" id="avgScore">Avg score: —</div>
+            <div class="tag" id="clickScore">Clickability: —</div>
+            <div class="tag" id="seoScore">SEO fit: —</div>
+            <div class="tag" id="sentiment">Sentiment: —</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Headlines presets from <code>/data/prompts.json</code> (optional)</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <select id="promptSelect" class="btn" style="flex:1"></select>
+              <button class="btn" id="applyPrompt">Apply</button>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:12px 0"/>
+
+          <div class="small muted">Tips</div>
+          <ol style="margin-top:8px;color:var(--muted);font-size:13px">
+            <li>Keep headlines under 70 characters for Google SERP.</li>
+            <li>Put the most important words early.</li>
+            <li>Test multiple variations — small wording changes matter.</li>
+          </ol>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div><strong>Batch Upload</strong></div>
+          <div class="muted small">Upload a CSV with "id,content" to generate headlines for multiple pieces.</div>
+          <input id="batchFile" type="file" accept=".csv" class="btn" style="width:100%;margin-top:8px;padding:8px" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="runBatch">Run</button>
+            <button class="btn" id="downloadBatch">Download results</button>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <footer>
+      <div class="muted small">Tip: Put commonly-used headline prompts in <code>/data/prompts.json</code> so each microapp can load shared templates.</div>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { genHeadlines, scoreHeadline, batchGenerateHeadlines } from './js/ai-tools.js';
+    import { loadPrompts, renderPromptSelect, setStatus, fetchViaProxy, downloadText } from './js/common.js';
+
+    const $ = s => document.querySelector(s);
+    const byId = id => document.getElementById(id);
+
+    const editor = byId('editor');
+    const generateBtn = byId('generateBtn');
+    const generateBtn2 = byId('generateBtn2');
+    const resultsEl = byId('results');
+    const resultCount = byId('resultCount');
+    const modelName = byId('modelName');
+    const presetSelect = byId('presetSelect');
+    const promptSelect = byId('promptSelect');
+    const loadPromptsBtn = byId('loadPrompts');
+
+    // local prompt store/fallbacks
+    let prompts = [
+      {id:'h1', name:'SEO short', prompt:'Write 8 short, SEO-friendly headlines under 60 characters.'},
+      {id:'h2', name:'Listicle', prompt:'Create 6 clicky listicle-style headlines.'},
+      {id:'h3', name:'Formal', prompt:'Write 6 professional headlines suitable for a tech publication.'}
+    ];
+
+    function renderPrompts(){
+      renderPromptSelect(presetSelect, prompts);
+      renderPromptSelect(promptSelect, prompts);
+    }
+    renderPrompts();
+
+    async function loadPromptsFromFile(){
+      try{
+        const remote = await loadPrompts('/data/prompts.json');
+        if(Array.isArray(remote) && remote.length){ prompts = remote; renderPrompts(); setStatus('Prompts loaded'); }
+        else setStatus('No prompts found');
+      }catch(e){ setStatus('Using local prompts'); }
+    }
+
+    loadPromptsBtn.addEventListener('click', ()=>loadPromptsFromFile());
+
+    async function generate(){
+      const text = editor.value.trim(); if(!text){ setStatus('No source text'); alert('Paste some text or fetch a URL first.'); return; }
+      const options = buildOptions();
+      setStatus('Generating...');
+
+      try{
+        const count = Math.min(20, parseInt(options.count,10)||8);
+        const out = await genHeadlines(text, { tone:options.tone, length:options.length, audience:options.audience, count });
+        renderResults(Array.isArray(out) ? out : []);
+        setStatus('Done');
+      }catch(err){ console.error(err); setStatus('Generate failed'); alert('Generation failed — check console for errors.'); }
+    }
+
+    function buildOptions(){
+      const tone = byId('tone').value;
+      const length = byId('length').value;
+      const audience = byId('audience').value;
+      const count = byId('count').value;
+      return { tone, length, audience, count };
+    }
+
+    function renderResults(items){
+      resultsEl.innerHTML = '';
+      const list = Array.from(items).map((it, idx)=>{
+        const text = typeof it === 'string' ? it : it.text || it.title || '';
+        const score = typeof it === 'object' && it.score ? it.score : scoreHeadline ? Math.round(scoreHeadline(text)*100)/100 : null;
+        const div = document.createElement('div'); div.className='headline-item';
+        div.dataset.idx = idx;
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><strong class="headline-text">${escapeHtml(text)}</strong><div class="muted small" style="margin-top:6px">${text.length} chars</div></div><div style="text-align:right"><div class="muted small">Score: <span class="score">${score===null?'-':score}</span></div><div class="headline-actions"><button class="btn selectBtn">Select</button><button class="btn copyBtn">Copy</button><button class="btn" data-clip>Use</button></div></div></div>`;
+        return div;
+      });
+      list.forEach(n=>resultsEl.appendChild(n));
+      resultCount.textContent = items.length;
+      attachResultHandlers();
+    }
+
+    function attachResultHandlers(){
+      resultsEl.querySelectorAll('.copyBtn').forEach(btn=>btn.addEventListener('click', e=>{
+        const txt = e.target.closest('.headline-item').querySelector('.headline-text').textContent; navigator.clipboard.writeText(txt); setStatus('Copied');
+      }));
+
+      resultsEl.querySelectorAll('.selectBtn').forEach(btn=>btn.addEventListener('click', e=>{
+        const el = e.target.closest('.headline-item'); el.classList.toggle('selected');
+      }));
+
+      resultsEl.querySelectorAll('[data-clip]').forEach(btn=>btn.addEventListener('click', e=>{
+        const txt = e.target.closest('.headline-item').querySelector('.headline-text').textContent; editor.value = txt; setStatus('Inserted into editor');
+      }));
+    }
+
+    // helper: escape HTML
+    function escapeHtml(s){ return (s||'').replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])); }
+
+    // fetch URL (uses server proxy at /api/fetch)
+    byId('fetchBtn').addEventListener('click', async ()=>{
+      const url = byId('sourceUrl').value.trim(); if(!url) return alert('Enter URL');
+      setStatus('Fetching URL...');
+      try{
+        const txt = await fetchViaProxy(url);
+        editor.value = txt; setStatus('URL fetched');
+      }catch(err){ console.error(err); alert('Could not fetch — proxy or CORS issue.'); setStatus('Fetch failed', {danger:true}); }
+    });
+
+    // paste from clipboard
+    byId('pasteBtn').addEventListener('click', async ()=>{
+      try{ const txt = await navigator.clipboard.readText(); editor.value = txt; setStatus('Pasted from clipboard'); }catch(e){ alert('Clipboard access denied'); }
+    });
+
+    // main generate button
+    generateBtn.addEventListener('click', generate);
+    generateBtn2.addEventListener('click', generate);
+
+    // regenerate: re-run with same options
+    byId('regenerateBtn').addEventListener('click', generate);
+
+    // clear
+    byId('clearBtn').addEventListener('click', ()=>{ if(confirm('Clear editor and results?')){ editor.value=''; resultsEl.innerHTML=''; resultCount.textContent='0'; setStatus('Cleared'); }});
+
+    // analyze headlines: call scoreHeadline if available
+    byId('analyzeBtn').addEventListener('click', ()=>{
+      const items = Array.from(resultsEl.querySelectorAll('.headline-item'));
+      if(!items.length) return alert('No headlines to analyze');
+      let total=0; let count=0;
+      items.forEach(div=>{
+        const txt = div.querySelector('.headline-text').textContent;
+        let s = null;
+        try{ s = typeof scoreHeadline === 'function' ? scoreHeadline(txt) : Math.random()*1; }catch(e){ s = Math.random()*1; }
+        div.querySelector('.score').textContent = Math.round(s*100)/100;
+        total += s; count++;
+      });
+      byId('avgScore').textContent = `Avg score: ${Math.round((total/count)*100)/100}`;
+      setStatus('Analysis complete');
+    });
+
+    // export CSV
+    byId('exportCsv').addEventListener('click', ()=>{
+      const rows = [];
+      Array.from(resultsEl.querySelectorAll('.headline-item')).forEach(div=>{
+        const txt = div.querySelector('.headline-text').textContent.replace(/"/g,'""');
+        const score = div.querySelector('.score')?.textContent || '';
+        rows.push(`"${txt}",${score}`);
+      });
+      const csv = 'headline,score\n' + rows.join('\n');
+      const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'headlines.csv'; a.click(); URL.revokeObjectURL(a.href); setStatus('CSV exported');
+    });
+
+    // copy all
+    byId('copyAll').addEventListener('click', ()=>{
+      const all = Array.from(resultsEl.querySelectorAll('.headline-item')).map(d=>d.querySelector('.headline-text').textContent).join('\n');
+      navigator.clipboard.writeText(all); setStatus('All headlines copied');
+    });
+
+    // preset save
+    byId('savePreset').addEventListener('click', ()=>{
+      const name = prompt('Preset name'); if(!name) return; prompts.push({id:'p_'+Date.now(), name, prompt:editor.value.slice(0,200)}); renderPrompts(); setStatus('Preset saved');
+    });
+
+    // batch upload (CSV)
+    byId('runBatch').addEventListener('click', async ()=>{
+      const f = byId('batchFile').files[0]; if(!f) return alert('Choose CSV first');
+      const text = await f.text();
+      // naive CSV parse: split lines, assume first column is id, second is content
+      const lines = text.split(/\r?\n/).filter(Boolean);
+      const rows = lines.map(l=>{ const [id,...rest]=l.split(','); return {id: id.replace(/"/g,''), content: rest.join(',').replace(/"/g,'')}; });
+      setStatus('Batch generating...');
+      try{
+        const opts = buildOptions();
+        const out = await batchGenerateHeadlines(rows, opts); // expected [{id, headlines:[...]}, ...]
+        // flatten and show
+        const all = [];
+        out.forEach(item=>{ item.headlines.forEach(h=>all.push(h)); });
+        renderResults(all);
+        setStatus('Batch done');
+      }catch(e){ console.error(e); alert('Batch generation failed'); }
+    });
+
+    // download batch: export current results as CSV
+    byId('downloadBatch').addEventListener('click', ()=>{ byId('exportCsv').click(); });
+
+    // sort by score
+    byId('sortBtn').addEventListener('click', ()=>{
+      const items = Array.from(resultsEl.querySelectorAll('.headline-item'));
+      items.sort((a,b)=>{ const sa = parseFloat(a.querySelector('.score').textContent)||0; const sb = parseFloat(b.querySelector('.score').textContent)||0; return sb - sa; });
+      resultsEl.innerHTML=''; items.forEach(i=>resultsEl.appendChild(i)); setStatus('Sorted by score');
+    });
+
+    // regenerate button
+    byId('regenerateBtn').addEventListener('click', generate);
+
+    // init
+    (function init(){
+      setStatus('Ready');
+      // try to load shared prompts
+      loadPromptsFromFile();
+      // expose simple API
+      window.HeadlineApp = { generate, renderResults };
+    })();
+
+  </script>
+  <script src="js/common.js"></script>
+  <script>
+    loadPromptsFromFile();
+    // expose simple API
+    window.HeadlineApp = { generate, renderResults };
+  })();
+
+</script>
+</body>
+</html>

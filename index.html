@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Microapps Hub — Free Micro AI Tools</title>
+  <meta name="description" content="AI Microapps Hub — fast, free micro AI tools that run in your browser. Summarizer, Headline generator, Card maker, Code explainer & more. No signup. Host for free." />
+  <meta name="keywords" content="AI tools, microapps, summarizer, headline generator, card maker, code explainer, free tools" />
+  <meta name="author" content="Soum Pathak" />
+
+  <!-- Open Graph (social previews) -->
+  <meta property="og:title" content="AI Microapps Hub — Free Micro AI Tools" />
+  <meta property="og:description" content="Fast, free micro AI tools that run in your browser. Summarize, generate headlines, create shareable cards and more — all without signup." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/your-username/your-repo/main/assets/og-hero.png" />
+  <meta property="og:url" content="https://your-username.github.io/ai-microapps-hub/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Preload font and tailwind CDN -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Basic CSS overrides -->
+  <style>
+    :root { --accent: #7c3aed; --accent-2: #06b6d4; --muted: #64748b; }
+    html,body { height:100%; }
+    body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg,#f7fafc 0%,#f1f5f9 100%); color:#0f172a; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    .container { max-width:1120px; margin:0 auto; padding:28px; }
+    .card-shadow { box-shadow: 0 10px 30px rgba(2,6,23,0.08); border-radius:14px; background:linear-gradient(180deg,#fff,#fbfdff); }
+    a.no-underline { text-decoration: none; }
+    /* subtle focus styles */
+    :focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset: 2px; border-radius:8px; }
+    /* small utilities for hero */
+    .kicker { display:inline-block; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; font-weight:700; padding:6px 10px; border-radius:999px; font-size:13px; }
+    .cta { background: linear-gradient(90deg,var(--accent),#8b5cf6); color:white; padding:12px 18px; border-radius:10px; font-weight:700; display:inline-flex; gap:10px; align-items:center; box-shadow:0 8px 24px rgba(124,58,237,0.18); text-decoration:none; }
+    /* responsive grid */
+    @media (min-width: 880px) {
+      .tools-grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start; }
+      .cards-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; }
+    }
+    @media (max-width: 879px) {
+      .cards-grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+    }
+  </style>
+
+  <!-- JSON-LD structured data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"AI Microapps Hub",
+    "url":"https://your-username.github.io/ai-microapps-hub/",
+    "description":"Fast, free micro AI tools that run in your browser.",
+    "publisher": {
+      "@type":"Person",
+      "name":"Soum Pathak"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Top navigation -->
+  <header class="container" role="banner">
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 no-underline">
+        <!-- simple logo SVG -->
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="#fff" stroke="rgba(15,23,42,0.06)"></rect>
+          <path d="M6 12h12M6 7h8M6 17h12" stroke="#7c3aed" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <div>
+          <div style="font-weight:800; letter-spacing: -0.4px; font-size:18px">AI Microapps Hub</div>
+          <div style="font-size:12px; color:var(--muted)">Free micro AI tools • No signup</div>
+        </div>
+      </a>
+
+      <nav aria-label="Main navigation" class="hidden md:flex gap-6 items-center">
+        <a href="#tools" class="text-sm text-slate-700 hover:text-slate-900">Tools</a>
+        <a href="#about" class="text-sm text-slate-700 hover:text-slate-900">About</a>
+        <a href="#why" class="text-sm text-slate-700 hover:text-slate-900">Why free</a>
+        <a href="#contact" class="text-sm text-slate-700 hover:text-slate-900">Contact</a>
+        <a href="https://github.com/your-username" target="_blank" rel="noopener" class="text-sm text-slate-700 hover:text-slate-900">GitHub</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" aria-label="Toggle theme" class="p-2 rounded-md" title="Toggle theme">
+          <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <a class="cta" href="#tools" title="Open Tools">
+          Try tools
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="container mt-8">
+    <div class="card-shadow p-8 lg:flex lg:gap-8 tools-grid">
+      <section style="flex:1">
+        <span class="kicker">New • Free</span>
+        <h1 class="mt-4" style="font-size:28px;line-height:1.05">Micro AI tools that actually help — fast outputs, instant share, zero signup.</h1>
+        <p class="mt-4 text-slate-600" style="max-width:60ch">
+          Ship value quickly. Each microapp solves a single problem (summarize, create headlines, shorten sentences, make shareable cards, explain code). Everything runs in your browser — free to host and share.
+        </p>
+
+        <div class="mt-6 flex gap-3">
+          <a class="cta" href="summarizer.html">Open Summarizer</a>
+          <a class="btn-demo px-4 py-2 rounded-md text-sm" href="#demo" style="background:#eef2ff;color:#4f46e5;border-radius:10px;font-weight:600;display:inline-flex;align-items:center">Try demo</a>
+        </div>
+
+        <dl class="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <dt style="font-weight:700">No signup</dt>
+            <dd class="text-slate-600">Works offline, no accounts — great for demos and classrooms.</dd>
+          </div>
+          <div>
+            <dt style="font-weight:700">Free hosting</dt>
+            <dd class="text-slate-600">Static files — host on GitHub Pages, Vercel or Netlify for free.</dd>
+          </div>
+          <div>
+            <dt style="font-weight:700">Extensible</dt>
+            <dd class="text-slate-600">Add new microapps quickly — minimal code and small surface area.</dd>
+          </div>
+          <div>
+            <dt style="font-weight:700">Share-ready</dt>
+            <dd class="text-slate-600">Social card maker & permalinks for easy sharing.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- Right column: demo / quick tools cards -->
+      <aside style="width:480px" class="mt-6 lg:mt-0">
+        <div class="card-shadow p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div style="font-weight:700">Live demo — Summarizer</div>
+              <div class="text-sm text-slate-600">Paste text and get a short extractive summary (≤280 chars). Runs here.</div>
+            </div>
+            <div class="text-sm text-slate-500">Instant • Private</div>
+          </div>
+
+          <div class="mt-4">
+            <label class="text-xs text-slate-500">Paste text</label>
+            <textarea id="demoInput" rows="5" class="mt-1 w-full p-3 border rounded-md" placeholder="Paste article, thread, or notes here..."></textarea>
+
+            <div class="flex gap-2 mt-3">
+              <select id="demoLimit" class="p-2 border rounded-md text-sm"><option value="280">280 chars (tweet)</option><option value="140">140 chars</option><option value="320">320 chars</option></select>
+              <button id="demoBtn" class="px-4 py-2 rounded-md" style="background:linear-gradient(90deg,var(--accent),#8b5cf6); color:white; font-weight:700">Summarize</button>
+              <button id="exampleBtn" class="px-3 py-2 rounded-md border" style="background:white">Example</button>
+            </div>
+
+            <div id="demoResult" class="mt-4" style="display:none">
+              <div class="result p-3 rounded-md" style="background:#0f1724;color:white"></div>
+              <div class="flex gap-2 mt-3">
+                <button id="copyDemo" class="px-3 py-2 rounded-md border" style="background:#1f2937;color:white">Copy</button>
+                <button id="shareDemo" class="px-3 py-2 rounded-md border">Share</button>
+                <a id="permaDemo" class="px-3 py-2 rounded-md border no-underline" style="color:var(--muted)" href="#">Permalink</a>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-500 mt-3">This demo is extractive and uses a lightweight heuristic (TF scoring) so it remains 100% free and private.</div>
+          </div>
+        </div>
+
+        <div class="mt-4 cards-grid">
+          <!-- Tool cards: link to dedicated pages -->
+          <article class="card-shadow p-4">
+            <h4 style="font-weight:700">Headline Generator</h4>
+            <p class="text-sm text-slate-600">Generate dozens of title variations from a single topic.</p>
+            <a class="mt-3 inline-block text-sm" href="headline.html">Open →</a>
+          </article>
+
+          <article class="card-shadow p-4">
+            <h4 style="font-weight:700">Shareable Card Maker</h4>
+            <p class="text-sm text-slate-600">Create a social image and download PNG for LinkedIn/Twitter.</p>
+            <a class="mt-3 inline-block text-sm" href="card.html">Open →</a>
+          </article>
+
+          <article class="card-shadow p-4">
+            <h4 style="font-weight:700">Code Explainer</h4>
+            <p class="text-sm text-slate-600">Paste a short snippet — get line-by-line comments and hints.</p>
+            <a class="mt-3 inline-block text-sm" href="code-explain.html">Open →</a>
+          </article>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Tools overview -->
+    <section id="tools" class="mt-10">
+      <h2 style="font-size:20px; font-weight:800">Tools & Microapps</h2>
+      <p class="text-slate-600 mt-2">Each microapp focuses on one task. Launch a tool or bookmark it for quick access.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Summarizer</h4>
+          <p class="text-sm text-slate-600">Extractive summarizer — ideal for threads, news, and notes.</p>
+          <div class="mt-3"><a href="summarizer.html" class="no-underline" style="color:var(--accent)">Open →</a></div>
+        </div>
+
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Headline Generator</h4>
+          <p class="text-sm text-slate-600">Template-based headline generation — blog and social copy.</p>
+          <div class="mt-3"><a href="headline.html" class="no-underline" style="color:var(--accent)">Open →</a></div>
+        </div>
+
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Shorten & Improve</h4>
+          <p class="text-sm text-slate-600">Remove filler words and tighten sentences for social posts.</p>
+          <div class="mt-3"><a href="shortener.html" class="no-underline" style="color:var(--accent)">Open →</a></div>
+        </div>
+
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Shareable Card Maker</h4>
+          <p class="text-sm text-slate-600">Design social images with a single click — export PNG.</p>
+          <div class="mt-3"><a href="card.html" class="no-underline" style="color:var(--accent)">Open →</a></div>
+        </div>
+
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Code Explainer</h4>
+          <p class="text-sm text-slate-600">Quick heuristics to annotate small code snippets.</p>
+          <div class="mt-3"><a href="code-explain.html" class="no-underline" style="color:var(--accent)">Open →</a></div>
+        </div>
+
+        <div class="card-shadow p-5">
+          <h4 style="font-weight:700">Coming soon</h4>
+          <p class="text-sm text-slate-600">Multi-language practice, file conversion tools, small AI playgrounds.</p>
+          <div class="mt-3"><a href="#" class="no-underline" style="color:var(--muted)">Roadmap →</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About / Why free -->
+    <section id="about" class="mt-10">
+      <h2 style="font-size:20px; font-weight:800">About & Philosophy</h2>
+      <p class="text-slate-600 mt-2">AI Microapps Hub is built to demonstrate that small, single-purpose AI tools can be powerful and shareable. The goal: fast utility, low friction, and a platform where anyone can add a microapp.</p>
+    </section>
+
+    <section id="why" class="mt-8">
+      <h3 style="font-weight:700">Why free & browser-first?</h3>
+      <ul class="text-slate-600 mt-2 list-disc pl-5">
+        <li>Privacy: all demo features run locally — your text stays in the browser.</li>
+        <li>Cost-free: static hosting and heuristic tools mean zero monthly bills for you at early stages.</li>
+        <li>Fast: less latency, instant sharing, and easy iterations.</li>
+      </ul>
+    </section>
+
+    <!-- Contact / subscribe -->
+    <section id="contact" class="mt-10">
+      <div class="card-shadow p-6">
+        <h3 style="font-weight:800">Get in touch / Subscribe</h3>
+        <p class="text-slate-600 mt-2">Want features, help, or partnership? Drop an email or subscribe to updates (stored locally).</p>
+
+        <div class="mt-4 md:flex gap-3">
+          <input id="emailInput" placeholder="Your email (optional)" class="p-3 border rounded-md flex-1" />
+          <button id="subscribeBtn" class="px-4 py-3 rounded-md" style="background:linear-gradient(90deg,var(--accent),#8b5cf6); color:white; font-weight:700">Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="text-sm text-slate-600 mt-3"></div>
+
+        <div class="mt-4 text-xs text-slate-500">Or email: <a href="mailto:hello@ai-microapps.local" class="text-slate-700">hello@ai-microapps.local</a></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-slate-600">
+      <div class="container">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>© 2025 AI Microapps Hub — Built free • <a href="https://github.com/your-username" target="_blank" rel="noopener" class="text-slate-700">Source</a></div>
+          <div class="text-sm">Made with ❤️ — browser-first, open for contributions</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- JavaScript: interactivity (theme, demo summarizer, subscribe) -->
+  <script type="module">
+    // Theme toggle (simple class toggle)
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const stored = localStorage.getItem('am_theme');
+    const root = document.documentElement;
+
+    function setDark(dark) {
+      if (dark) {
+        root.style.background = 'linear-gradient(180deg,#0b1220 0%, #071126 100%)';
+        document.body.style.color = '#e6eef6';
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#e6eef6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+      } else {
+        root.style.background = '';
+        document.body.style.color = '';
+        themeIcon.innerHTML = '<path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      }
+    }
+    // initialize theme
+    setDark(stored === 'dark' || (!stored && prefersDark));
+    themeToggle.addEventListener('click', () => {
+      const nowDark = localStorage.getItem('am_theme') === 'dark';
+      localStorage.setItem('am_theme', nowDark ? 'light' : 'dark');
+      setDark(!nowDark);
+    });
+
+    // Simple extractive summarizer used in the demo (same as a robust client-side version)
+    const STOP_WORDS = new Set(("a about above after again against all am an and any are as at be because been before being below between both but by can did do does doing down during each few for from further had has have having he her here hers herself him himself his how i if in into is isn't it its itself just me more most my myself no nor not of off on once only or other our ours ourselves out over own same she should so some such than that the their theirs them themselves then there these they this those through to too under until up very was we were what when where which while who whom why with would you your yours yourself yourselves").split(/\s+/));
+
+    function tokenizeWords(text){
+      return text.toLowerCase().replace(/[^a-z0-9\s']/g,' ').split(/\s+/).filter(Boolean);
+    }
+    function sentenceSplit(text){
+      const s = text.replace(/\r\n/g,'\n');
+      const parts = s.split(/(?<=[.?!\n])\s+/);
+      return parts.map(p=>p.trim()).filter(Boolean);
+    }
+    function scoreSentences(sentences){
+      const freq = {};
+      sentences.forEach(s=>{
+        const words = tokenizeWords(s).filter(w => !STOP_WORDS.has(w));
+        words.forEach(w => freq[w] = (freq[w]||0)+1);
+      });
+      return sentences.map(s=>{
+        const words = tokenizeWords(s).filter(w => !STOP_WORDS.has(w));
+        let score = 0; words.forEach(w => score += (freq[w]||0));
+        if(s.length > 240) score *= 0.8;
+        return {text:s, score, len:s.length};
+      });
+    }
+    function buildSummary(original, charLimit=280){
+      original = original.replace(/\s+/g,' ').trim();
+      if(!original) return '';
+      const sentences = sentenceSplit(original);
+      if(sentences.length===1) return original.length <= charLimit ? original : original.slice(0,charLimit-1) + '…';
+      const scored = scoreSentences(sentences);
+      const sorted = [...scored].sort((a,b)=> b.score - a.score);
+      const selected = new Set(); let total = 0;
+      for(const s of sorted){
+        if(total + s.text.length <= charLimit){ selected.add(s.text); total += s.text.length; }
+      }
+      if(selected.size === 0 && sorted.length) selected.add(sorted[0].text);
+      const out = sentences.filter(s => selected.has(s)).join(' ');
+      return out.length <= charLimit ? out : out.slice(0,charLimit-1) + '…';
+    }
+
+    // demo UI wiring
+    const demoBtn = document.getElementById('demoBtn');
+    const demoInput = document.getElementById('demoInput');
+    const demoLimit = document.getElementById('demoLimit');
+    const demoResultWrap = document.getElementById('demoResult');
+    const demoResultBox = demoResultWrap?.querySelector('.result');
+    const copyDemo = document.getElementById('copyDemo');
+    const shareDemo = document.getElementById('shareDemo');
+    const permaDemo = document.getElementById('permaDemo');
+    const exampleBtn = document.getElementById('exampleBtn');
+
+    demoBtn?.addEventListener('click', ()=>{
+      const txt = demoInput.value.trim();
+      if(!txt){ alert('Paste some text to summarize'); demoInput.focus(); return; }
+      const limit = parseInt(demoLimit.value,10) || 280;
+      const summary = buildSummary(txt, limit);
+      demoResultWrap.style.display = 'block';
+      demoResultBox.textContent = summary;
+      const params = new URLSearchParams({ app: 'summarizer', text: demoInput.value });
+      permaDemo.href = location.pathname + '?' + params.toString();
+      permaDemo.textContent = 'Permalink';
+    });
+    exampleBtn?.addEventListener('click', ()=>{
+      demoInput.value = "OpenAI released a new model today that improves performance on many tasks and reduces latency for developers. Microapps that use small, fast models can provide immediate value like summarizers, headline generators, and image captioners. This helps students and content creators save time.";
+      demoBtn.click();
+    });
+    copyDemo?.addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(demoResultBox.textContent); copyDemo.textContent = 'Copied ✓'; setTimeout(()=>copyDemo.textContent='Copy',1400);}catch(e){ alert('Copy failed'); }
+    });
+    shareDemo?.addEventListener('click', async ()=>{
+      if(navigator.share){ try{ await navigator.share({ text: demoResultBox.textContent, title: 'Summary from AI Microapps Hub' }); }catch(e){} } else {
+        alert('Native share not supported — copy and paste the summary.');
+      }
+    });
+
+    // subscribe button (localStorage, no backend)
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const emailInput = document.getElementById('emailInput');
+    const subscribeMsg = document.getElementById('subscribeMsg');
+
+    subscribeBtn?.addEventListener('click', ()=>{
+      const email = (emailInput.value || '').trim();
+      if(email && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){ subscribeMsg.textContent = 'Please enter a valid email or leave blank.'; return; }
+      if(email){
+        // store locally — you can expand to send to a real back end later
+        let list = JSON.parse(localStorage.getItem('am_subs') || '[]');
+        if(!list.includes(email)){ list.push(email); localStorage.setItem('am_subs', JSON.stringify(list)); subscribeMsg.textContent = 'Subscribed — saved locally. We will eventually email updates.'; } else { subscribeMsg.textContent = 'You are already subscribed (saved locally).'; }
+      } else {
+        subscribeMsg.textContent = 'No email entered — add email to subscribe for updates.';
+      }
+      setTimeout(()=> subscribeMsg.textContent = '', 5000);
+    });
+
+    // smooth scroll for in-page anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+
+    // small performance: lazyload long images if added later (placeholder)
+    if('loading' in HTMLImageElement.prototype){
+      document.querySelectorAll('img[loading="lazy"]').forEach(img => {/* native lazy */});
+    }
+
+    // Analytics placeholder (no external calls) — replace with GA or Plausible later
+    // window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+
+  <script type="module">
+    import { buildExtractiveSummary, genHeadlines } from './js/ai-tools.js';
+    </script>
+
+</body>
+</html>

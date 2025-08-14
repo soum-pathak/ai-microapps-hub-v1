@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Code Explainer — AI Microapps Hub</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <header class="topbar"><div class="wrap"><a class="brand" href="index.html">AI Microapps Hub</a></div></header>
+  <main class="wrap">
+    <h2>Code Explainer</h2>
+    <p class="small">Paste a short code snippet (<= 100 lines). This uses heuristics to add simple comments and explain each line.</p>
+
+    <label class="small">Paste code</label>
+    <textarea id="codeIn" rows="12" placeholder="function add(a,b){ return a+b }"></textarea>
+    <div class="form-row">
+      <button id="explainBtn" class="btn">Explain</button>
+      <button id="clearBtn" class="icon-btn">Clear</button>
+    </div>
+
+    <div id="out" style="margin-top:12px"></div>
+  </main>
+
+<script>
+function explainLine(line){
+  const t = line.trim();
+  if(!t) return '';
+  // heuristics
+  if(/^\/\/|^\/\*/.test(t)) return t; // keep comments
+  if(/\bfunction\b/.test(t)) return t + '  // defines a function';
+  if(/\breturn\b/.test(t)) return t + '  // returns a value from the function';
+  if(/\bfor\s*\(/.test(t)) return t + '  // for-loop iterating with index';
+  if(/\bwhile\s*\(/.test(t)) return t + '  // while-loop';
+  if(/\bif\s*\(/.test(t)) return t + '  // conditional: if condition true, run block';
+  if(/\bconsole\.log\b/.test(t)) return t + '  // prints to console (debug)';
+  if(/=\s*\w+\s*=>/.test(t) || /=>/.test(t)) return t + '  // arrow function expression';
+  if(/=>/.test(t) && /\{/.test(t)) return t + '  // arrow function with body';
+  if(/=/.test(t)) return t + '  // assignment or variable initialization';
+  if(/\bvar\b|\bconst\b|\blet\b/.test(t)) return t + '  // declares a variable';
+  return t + '  // (general code statement)';
+}
+
+document.getElementById('explainBtn').addEventListener('click', ()=>{
+  const code = document.getElementById('codeIn').value;
+  if(!code.trim()) { alert('Paste code first'); return; }
+  const lines = code.split('\n');
+  const out = lines.map(l => explainLine(l)).join('\n');
+  document.getElementById('out').innerHTML = `<pre style="background:#0f1724;color:#fff;padding:12px;border-radius:8px">${escapeHtml(out)}</pre>`;
+});
+document.getElementById('clearBtn').addEventListener('click', ()=>{ document.getElementById('codeIn').value=''; document.getElementById('out').innerHTML=''; });
+
+function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+</script>
+</body>
+</html>
